@@ -1,0 +1,54 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: SC_NAME-pvc
+  namespace: portworx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: SC_NAME
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fio-job-SC_NAME
+  namespace: portworx
+spec:
+  template:
+    spec:
+      schedulerName: stork
+      containers:
+      - name: fio-write
+        image: dmonakhov/alpine-fio
+        volumeMounts:
+        - mountPath: /mnt
+          name: test-volume
+        - mountPath: /fiocfg
+          name: fiocfg
+        - mountPath: /data
+          name: data-volume
+        args:
+          - "fio"
+          - "--output-format=json"
+          - "/fiocfg/fiojobs.fio"
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Never
+      securityContext:
+        privileged: true
+      volumes:
+      - name: test-volume
+        persistentVolumeClaim:
+          claimName: SC_NAME-pvc
+      - name: fiocfg
+        configMap:
+          name: fiocfg
+      - name: data-volume
+        hostPath:
+          # directory location on host
+          path: /data
+          # this field is optional
+          type: Directory

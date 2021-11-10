@@ -1,0 +1,51 @@
+apiVersion: v1
+data:
+  fiojobs.fio: |-
+    ##making this fio file as place holder for new config
+    [global]
+    blocksize=64k
+    filename=/mnt/fio.dat
+    ioengine=libaio
+    size=10GiB
+    name=test
+    direct=1
+    invalidate=1
+    exec_prerun=sh -c "echo 3  >/proc/sys/vm/drop_caches"
+    
+    iodepth=128
+    [64k-write]
+    stonewall
+    readwrite=write
+    buffer_compress_percentage=50
+    end_fsync=1
+    [64k-read]
+    stonewall
+    readwrite=read
+    [64k-rand-write]
+    stonewall
+    readwrite=randwrite
+    buffer_compress_percentage=50
+    end_fsync=1
+    [64k-rand-read]
+    stonewall
+    readwrite=randread
+    [64k-mix-rand-50-50]
+    stonewall
+    readwrite=randrw
+    buffer_compress_percentage=50
+    end_fsync=1
+    [64k-mix-rand-80-20]
+    stonewall
+    readwrite=randrw
+    buffer_compress_percentage=50
+    end_fsync=1
+    [64k-mix-rand-20-80]
+    stonewall
+    readwrite=randrw
+    buffer_compress_percentage=50
+    end_fsync=1
+kind: ConfigMap
+metadata:
+  name: fiocfg
+  namespace: portworx
+

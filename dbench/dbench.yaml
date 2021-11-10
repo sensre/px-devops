@@ -1,0 +1,74 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: JOB_NAME
+spec:
+  storageClassName: px-dbench-sc
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1000Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: JOB_NAME
+spec:
+  template:
+    spec:
+      schedulerName: stork
+      initContainers:
+      - name: dbench-init
+        image: dmonakhov/alpine-fio
+        imagePullPolicy: Always
+        args:
+        - "fio"
+        - "--blocksize=64k"
+        - "--filename=/data/fiotest"
+        - "--ioengine=libaio"
+        - "--readwrite=write"
+        - "--size=4G"
+        - "--name=write"
+        - "--direct=1"
+        - "--iodepth=128"
+        - "--end_fsync=1"
+        volumeMounts:
+        - name: dbench-pv
+          mountPath: /data
+      restartPolicy: Never
+      containers:
+      - name: dbench
+        image: fmrtl73/dbench:0.11
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        env:
+          - name: DBENCH_MOUNTPOINT
+            value: /data
+          - name: RUN_TIME
+            value: "60"
+          # - name: DBENCH_QUICK
+          #   value: "yes"
+          # - name: FIO_SIZE
+          #   value: 1G
+          # - name: FIO_OFFSET_INCREMENT
+          #   value: 256M
+          - name: FIO_DIRECT
+            value: "0"
+        volumeMounts:
+        - name: dbench-pv
+          mountPath: /data
+        - name: dbench-sync
+          mountPath: /tmp/sync
+      restartPolicy: Never
+      volumes:
+      - name: dbench-pv
+        persistentVolumeClaim:
+          claimName: JOB_NAME
+      - name: dbench-sync
+        persistentVolumeClaim:
+          claimName: dbench-sync
+      imagePullSecrets:
+      - name: regcred
+  backoffLimit: 4

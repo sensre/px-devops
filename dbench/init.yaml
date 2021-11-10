@@ -1,0 +1,34 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+  name: px-dbench-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  priority_io: high
+  repl: "1"
+  sharedv4: "true"
+  cow_ondemand: "true"
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+  name: px-shared-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  priority_io: high
+  repl: "1"
+  sharedv4: "true"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dbench-sync
+spec:
+  storageClassName: px-shared-sc
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
