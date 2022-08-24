@@ -1,0 +1,12 @@
+
+Quick Install Instructions of python-psutil on Ubuntu Server. It’s Super Easy! simply click on Copy button to copy the command and paste into your command line terminal using built-in APT package manager.
+
+See below for quick step by step instructions of SSH commands, Copy/Paste to avoid miss-spelling or accidently installing a different package.
+
+
+module providing convenience functions for managing processes
+psutil is a module providing an interface for retrieving information on running processes and system utilization (CPU, memory) in a portable way by using Python, implementing many functionalities offered by tools like ps, top and Windows task manager. module providing convenience functions for managing processes
+psutil is a module providing an interface for retrieving information on running processes and system utilization (CPU, memory) in a portable way by using Python, implementing many functionalities offered by tools like ps, top and Windows task manager.
+
+
+Adding this line and writing it from node
