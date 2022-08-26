@@ -1,9 +1,12 @@
+# Storage Cluster Options
+
 You can use "kubectl explain storagecluster" to see a description for all the fields in the storagecluster object.
 
 
 
 List of required images (for air-gapped installation):
 
+```
 gcr.io/google_containers/kube-controller-manager-amd64:$kube_version
 gcr.io/google_containers/kube-scheduler-amd64:$kube_version
 k8s.gcr.io/pause:3.1
@@ -23,12 +26,15 @@ portworx/px-enterprise:2.4.0
 openstorage/openstorage-operator:1.3-dev
 Air-gapped bootstrap helper
 
+````
+
 See also https://install.portworx.com/air-gapped (docs ref) boostrap script, that helps automate import of the container-images into air-gapped customer's environments.
 
 
 
 PX components list:
 
+```
 portworx [portworx csi-node-driver-registrar]
 portworx-api
 portworx-proxy
@@ -41,3 +47,5 @@ px-csi-ext [csi-external-provisioner csi-snapshotter csi-resizer]
 portworx-pvc-controller
 px-prometheus-operator
 prometheus
+
+```
