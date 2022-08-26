@@ -1,1 +1,1 @@
-Grafana template for a Portworx grafana instance that talks to the existing prometheus instance that ships with Tectonic Prometheus Operator.
+Grafana template for a Portworx grafana instance that talks to the existing prometheus instance.
