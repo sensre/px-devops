@@ -1,1 +1,0 @@
-Namespace supplied, but no parent PVC name annotation
