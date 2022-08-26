@@ -1,8 +1,12 @@
 sudo systemctl stop portworx
-sudo systemctl disable portworx
-sudo rm -f /etc/systemd/system/portworx*.service
-grep -q '/opt/pwx/oci /opt/pwx/oci' /proc/self/mountinfo && sudo umount /opt/pwx/oci
-sudo chattr -i  /etc/pwx/.private.json
-sudo rm -fr /opt/pwx
-sudo rm -fr /etc/pwx
-sudo wipe -a -f
+sudo docker rm portworx.service -f
+sudo rm /etc/systemd/system/portworx.service -f
+sudo rm /etc/systemd/system/dcos.target.wants/portworx.service -f
+sudo rm /etc/systemd/system/multiuser.target.wants/portworx.service
+sudo systemctl daemon-reload
+sudo /opt/pwx/bin/pxctl service node-wipe --all
+sudo chattr -i /etc/pwx/.private.json
+sudo rm -rf /etc/pwx
+sudo umount /opt/pwx/oci
+sudo rm -rf /opt/pwx
+sudo rmmod px -f
