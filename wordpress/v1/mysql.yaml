@@ -27,7 +27,7 @@ spec:
   template:
     metadata:
       labels:
-        app: wordpress-mysql
+        app: wordpress-mysql  
         tier: mysql
     spec:
       containers:
