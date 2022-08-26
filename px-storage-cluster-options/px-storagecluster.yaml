@@ -1,0 +1,330 @@
+apiVersion: core.libopenstorage.org/v1alpha1
+kind: StorageCluster
+metadata:
+  # This becomes the Portworx cluster name
+  name: portworx
+  # All components are deployed in this namespace including Lighthouse and Stork
+  namespace: kube-system
+  annotations:
+    # Most of the annotations will be added by install.portworx.com and users
+    # do not have to know about these, unless they need to change these later.
+    portworx.io/is-openshift: "true" # Add for Openshift
+    portworx.io/is-gke: "true" # Add for Google Kubernetes Engine
+    portworx.io/is-aks: "true" # Add for Azure Kubernetes Service
+    portworx.io/is-eks: "true" # Add for Elastic Kubernetes Service
+    portworx.io/is-pks: "true" # Add for Pivotal Kubernetes Service
+    portworx.io/pod-security-policy: "false" # Enable PSP which is disabled by default
+    portworx.io/pod-disruption-budget: "false" # Disable PDB which is enabled by default
+    portworx.io/service-type: "LoadBalancer" # The default service type if ClusterIP. To overwrite that use this annotation with any known kubernetes service type.
+    portworx.io/pvc-controller: "true" # Add if pvc controller has to be explicitly enabled. In most of the above clouds, PVC controller is enabled by default.
+    portworx.io/pvc-controller-cpu: "300m" # Can overwrite the default (200m) pvc controller pods CPU
+    portworx.io/pvc-controller-port: "1111" # Custom port for pvc controller
+    portworx.io/pvc-controller-secure-port: "2222" # Custom secure port for pvc controller
+    portworx.io/autopilot-cpu: "300m" # Can overwrite the default CPU for autopilot pods
+    portworx.io/misc-args: "-foo bar -enable_shared_v4" # Misc px runc args that cannot be passed in the StorageCluster spec. Should not be needed in most cases.
+    # The operator depends on px version to decide what versions of other components (like stork, lighthouse, csi, etcd) to install. It extracts the px version from
+    # image name. If you are using a custom image without a semvar version tag, you can use this annotation to explicitly tell the operator about px version.
+    portworx.io/px-version: "2.2.0"
+    portworx.io/disable-storage-class: "true" # This will disable the default portworx storage classes
+    operator.libopenstorage.org/cordoned-restart-delay-secs: "300" # duration (in seconds) to wait before starting the px pods again after a node is cordoned
+    operator.libopenstorage.org/stork-cpu: "300m" # Can overwrite the default CPU for stork pods
+    operator.libopenstorage.org/stork-scheduler-cpu: "300m" # Can overwrite the default CPU for stork scheduler pods
+    operator.libopenstorage.org/disable-storage: "true" # This will disable portworx pods, portworx-api daemon set and portworx service. Currently it is used by px-central to manage components like prometheus in remote clusters through px-operator without disturbing the existing installed portworx via daemonset
+    # List of comma separated image registries to replace with custom image registry specified by spec.customImageRegistry
+    # For example customImageRegistry is myCustomRegistry, common image registries has "k8s.gcr.io"
+    # k8s.gcr.io/kube-controller-manager:v1.20.0 will be replaced with myCustomRegistry/kube-controller-manager:v1.20.0
+    operator.libopenstorage.org/common-image-registries: "k8s.gcr.io,gcr.io"
+spec:
+  # OCI monitor image
+  image: "portworx/oci-monitor:2.1.4"
+  # This policy will apply to all images like px-enterprise, stork, lighthouse, etc
+  # Examples: "IfNotPresent", "Always", "Never". Default is "Always"
+  imagePullPolicy: "Always"
+  # This will be used to pull images from private repositories
+  imagePullSecret: <secret-name-in-same-namespace>
+  # All images will be pulled from this custom registry/repo
+  customImageRegistry: docker.private.io/repo
+  # This is a read-only field. This indicates the current version of Portworx.
+  version: 2.1.5
+  # Automatically update components based on the given strategy.
+  # Possible values: [Never|Always|Once]
+  # Default value: nil (acts like Never)
+  autoUpdateComponents: Once
+  # List of custom annotations to portworx pod. Replace "custom-domain/custom-key: custom-val" accordingly.
+  spec:
+    metadata:
+      annotations:
+        pod/storage:
+          custom-domain1/custom-key1: custom-val1
+          custom-domain2/custom-key2: custom-val2
+  kvdb:
+    # Internal etcd
+    internal: false
+    # Endpoints for external KVDB
+    endpoints:
+    - etcd:http://<endpoint-1>:2379
+    - etcd:http://<endpoint-2>:2379
+    - etcd:http://<endpoint-3>:2379
+    # Secret from which we can read KVDB certs/auth token/username:password
+    authSecret: <secret-name-in-same-namespace>
+  # This block will be used for normal scenarios where we are not using cloud drives/ASG feature
+  storage:
+    # Equivalent to (-a)
+    useAll: true
+    # Equivalent to (-A). Takes precedence over (-a)
+    useAllWithPartitions: false
+    # Equivalent to (-f)
+    forceUseDisks: false
+    # Equivalent to (-s) with one device path per item in the array. This gets precedence over (-a) or (-A)
+    devices:
+    - /dev/sdb
+    - /dev/sdc
+    # Equivalent to (-j)
+    journalDevice: /dev/sdd
+    # Equivalent to (-metadata)
+    systemMetadataDevice: /dev/sde
+    # Equivalent to (-kvdb_dev)
+    kvdbDevice: /dev/kvdb
+  # Cloud drive specs. If spec.storage is specified then this block will
+  # be ignored.
+  cloudStorage:
+    # Equivalent to (-s) with one spec for item in the array
+    deviceSpecs:
+    - type=gp2,size=500
+    # Equivalent to (-j)
+    journalDeviceSpec: type=gp2,size=10
+    # Equivalent to (-metadata)
+    systemMetadataDeviceSpec: type=gp2,size=100
+    # Equivalent to (-kvdb_dev)
+    kvdbDeviceSpec: /dev/kvdb
+    # Equivalent to (-max_storage_nodes_per_zone). Recommended over maxStorageNodes.
+    maxStorageNodesPerZone: 3
+    # Equivalent to (-max_drive_set_count)
+    maxStorageNodes: 10
+  # Network configuration
+  network:
+    # Equivalent to (-d)
+    dataInterface: eth0
+    # Equivalent to (-m)
+    mgmtInterface: eth0
+  # Equivalent to (-secret_type)
+  secretsProvider: k8s
+  # Equivalent to (-r)
+  startPort: 9001
+  # Environment variables in kubernetes format. Could pass a secret as env
+  # as well. All kubernetes EnvVar types supported.
+  env:
+  - name: KEY
+    value: VALUE
+  - name: PX_IMAGE # NOT NEEDED - only for testing
+    value: portworx/px-base-enterprise:2.1.2-rc5
+  # Equivalent to (-rt_opts) in form of a map. Numeric values should be
+  # quoted and passed as a string.
+  runtimeOptions:
+    num_threads: "12"
+    num_io_threads: "10"
+    num_cpu_threads: "2"
+  # Portworx features gates. For now we only have CSI.
+  featureGates:
+    CSI: "true"
+  # Lighthouse configuration
+  userInterface:
+    enabled: true
+    image: portworx/px-lighthouse:2.0.3
+    # Lock image is a boolean indicating if the lighthouse image needs to be locked
+    # to the above given image. If the image is not locked it can be updated by
+    # the operator based on the Portworx image.
+    lockImage: false
+    # Internal env variables to override stork connector and config sync image for
+    # internal testing.
+    env:
+    - name: LIGHTHOUSE_STORK_CONNECTOR_IMAGE
+      value: custom/stork-connector:latest
+    - name: LIGHTHOUSE_CONFIG_SYNC_IMAGE
+      value: custom/config-sync:latest
+  # Stork configuration
+  stork:
+    enabled: true
+    image: openstorage/stork:2.0.2
+    # Lock image is a boolean indicating if the stork image needs to be locked
+    # to the above given image. If the image is not locked it can be updated by
+    # the operator based on the Portworx image.
+    lockImage: false
+    # Run stork pods with host network if enabled. Default is disabled/false.
+    hostNetwork: true
+    # Optionally add or overwrite default stork arguments. Numeric values
+    # should be quotes and passed as string.
+    args:
+      verbose: "false"
+      webhook-controller: "true"
+      health-monitor-interval: "100"
+    # Optionally add environment variables needed by Stork.
+    env:
+    - name: KEY
+      value: VALUE
+    # Refer StorageCluster.spec.volumes for the schema
+    volumes: []
+  # Autopilot configuration
+  autopilot:
+    enabled: true
+    image: portworx/autopilot:1.0.0
+    # Lock image is a boolean indicating if the autopilot image needs to be locked
+    # to the above given image. If the image is not locked it can be updated by
+    # the operator based on the Portworx image.
+    lockImage: false
+    # Optionally add or overwrite default autopilot arguments. Numeric values
+    # should be quotes and passed as string.
+    args:
+      log-level: warn/debug/info/trace
+      min_poll_interval: "4"
+    # Providers is a list of data providers for autopilot. Autopilot gets data
+    # from these and to take actions based on its rules.
+    providers:
+    - name: default
+      type: prometheus
+      # Comma-separated key-value params for the provider
+      params: url=http://foo.com,param2=value2
+    # Optionally add environment variables needed by Autopilot.
+    env:
+    - name: KEY
+      value : VALUE 
+    # Refer StorageCluster.spec.volumes for the schema
+    volumes: []
+  # Security configuration
+  security:
+    # Disabled by default.
+    # Setting to true will fill out the below default values
+    enabled: true
+    auth:
+      # Possible values: [Enabled | Disabled | Managed]
+      # Enabled will set system.guest default values
+      # Disabled will restrict all access to system.guest role
+      # Managed will allow the user to make changes to system.guest without operator interference
+      guestAccess: "Enabled"
+      selfSigned:
+        # token expiration time for operator-generated tokens (px-admin-token and px-user-token)
+        tokenLifetime: '24h'
+        # populates the portworx env variable "PORTWORX_AUTH_JWT_ISSUER"
+        issuer: 'operator.portworx.io'
+        # populates the portworx env variable "PORTWORX_AUTH_JWT_SHAREDSECRET" with the contents of a k8s secret px-shared-secret
+        sharedSecret: 'px-shared-secret'
+  # Monitoring configuration
+  monitoring:
+    # Prometheus configuration
+    prometheus:
+      # Installs prometheus operator and deploys a prometheus instance
+      enabled: true
+      # Creates service monitor and prometheus rule to export portworx metrics to either the internally deployed prometheus or an external prometheus. This can be used independent of whether monitoring.prometheus.enabled is set or not.
+      exportMetrics: true
+      # Send the metrics to this remote endpoint
+      remoteWriteEndpoint: "<remote_write_endpoint>"
+  # Number of revisions to keep for the StorageCluster object.
+  revisionHistoryLimit: 10
+  # Update strategy similar to what kubernetes had for Daemon Sets.
+  # Both RollingUpdate and OnDelete supported.
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  deleteStrategy:
+    # Delete strategy for the storage cluster. If no delete strategy is specified
+    # then only the kubernetes objects will be deleted like the OCI monitor pods,
+    # lighthouse, stork, csi, pvc-controller specs, etc. Portworx systemd service
+    # and configuration will remain intact. Equivalent to deleting DaemonSet.
+    # UninstallAndWipe will remove all Portworx bits including wiping drives
+    # and kvdb
+    type: UninstallAndWipe
+    # Uninstall will remove all Portworx bits except for the wiping the drives
+    # and kvdb data
+    # type: Uninstall
+  placement:
+    # Kubernetes like nodeAffinity for Portworx pods. The following is the default
+    # that we add, but users could have their own affinity rules.
+    # Should be applied to all the pods created by the operator
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: px/enabled
+            operator: NotIn
+            values:
+            - "false"
+          - key: node-role.kubernetes.io/master
+            operator: DoesNotExist
+    # Toleration should be applied to all Portworx operator created pods
+    tolerations:
+    - key: "key"
+      operator: "Equal"
+      value: "value"
+      effect: "NoSchedule"
+  # Array of extra volumes for portworx pods
+  volumes:
+  - name: volume1
+    mountPath: /path1/inside/container
+    readOnly: true|false
+    # Refer: https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation
+    mountPropagation: string
+    # Refer: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+    hostPath:
+      path: /path/on/host
+      type: Directory
+  - name: volume2
+    mountPath: /path2/inside/container # Folder where the volume will be mounted
+    # Refer: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+    secret:
+      secretName: k8s-secret
+      items:
+      - key: key-inside-k8s-secret # Key used to store file data in
+        path: relative/path/under/mount/path # Name of the file where the file will be written inside the container
+  - name: volume3
+    mountPath: /path3/inside/container
+    # Refer: https://kubernetes.io/docs/concepts/storage/volumes/#configmap
+    configMap:
+      name: k8s-configmap
+      items:
+      - key: key-inside-k8s-configmap
+        path: relative/path/under/mount/path
+  # Node specific configurations. Can have multiple of these. If certain configuration is not specified at the node/node-group level, it will be taken from the cluster-level when portworx is started on that node.
+  nodes:
+    # Selector for the node group. Can have either nodeName or labelSelector. If both are specified we only look at nodeName.
+  - selector:
+      # Name of the k8s node for which the config is getting overridden
+      nodeName: <node-1>
+      # K8s style label selector to match nodes
+      labelSelector:
+        matchLabels: # type <map[string]string>
+          key: value
+        matchExpressions: {} # Refer https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#resources-that-support-set-based-requirements
+    # The storage configuration is similar to one at the cluster level. If a field is empty, the operator takes it from the cluster level.
+    storage:
+      # Equivalent to (-a)
+      useAll: true
+      # Equivalent to (-A). Takes precedence over (-a)
+      useAllWithPartitions: false
+      # Equivalent to (-f)
+      forceUseDisks: false
+      # Equivalent to (-s) with one device path per item in the array. This gets precedence over (-a) or (-A)
+      devices: # If devices is specified but left empty, node assumed to be storageless
+      - /dev/sdc
+      - /dev/sdc
+      # Equivalent to (-j)
+      journalDevice: /dev/sdd
+      # Equivalent to (-metadata)
+      systemMetadataDevice: /dev/sde
+      # Equivalent to (-kvdb_dev)
+      kvdbDevice: /dev/kvdb
+    # The network configuration is similar to one at the cluster level. If a field is empty, the operator takes it from the cluster level.
+    network:
+      # Equivalent to (-d)
+      dataInterface: eth0
+      # Equivalent to (-m)
+      mgmtInterface: eth0
+    # Runtime options <map[string]string> is similar to one at the cluster level. If present, it overwrites whatever is present at the cluster-level.
+    runtimeOptions:
+      num_threads: "12"
+      num_io_threads: "10"
+      num_cpu_threads: "2"
+    # K8s style env vars. Cluster level envs and these will get merged and passed to the nodes. If same variable is present at cluster and node level, node level env var's value takes precedence.
+    env:
+    - name: KEY
+      value : VALUE
