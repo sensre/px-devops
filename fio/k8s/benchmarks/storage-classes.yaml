@@ -1,5 +1,5 @@
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: fio-compressed
     namespace: portworx
@@ -12,7 +12,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: fio-repl1
     namespace: portworx
@@ -24,7 +24,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: fio-repl3
     namespace: portworx

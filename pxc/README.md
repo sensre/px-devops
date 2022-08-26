@@ -128,7 +128,7 @@ You can create some volumes to test with, first create a storage class:
 ```
 cat <<EOF | kubectl apply -f -
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: px-sc
 provisioner: kubernetes.io/portworx-volume

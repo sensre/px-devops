@@ -1,1 +1,56 @@
-The portworx/px-check-runtime container gathers PX and host information from a node running PX for diagnostics and debugging purposes.The things that are collected today: CPU, Memory, kernel/OS, Docker andEtcd versions, PX version, status, cluster and volume listThe check is distributed via a container and needs to be run on each node or using the podset yaml and kubectl.    The logging is currently captured in the container logs and also written to an output file on the node in /var/log/pxcheck.Docker run:   sudo docker run --rm --name px-check-runtime --net=host --privileged=true  -v /etc/pwx:/etc/pwx -v /opt/pwx/bin:/export_bin:shared -v /var/run/docker.sock:/var/run/docker.sock -v /var/log/pxcheck:/var/log/pxcheck:shared portworx/px-check-runtime:2.0.0.0Below is dset yaml file which can be used with kubernetes.e.g. Yaml:apiVersion: extensions/v1beta1kind: DaemonSetmetadata:  name: px-runtime-check-dset  namespace: kube-systemspec:  minReadySeconds: 0  template:    metadata:      labels:        name: px-runtime-check    spec:      hostNetwork: true      containers:      - name: px-runtime-check        image: portworx/px-check-runtime:2.0.0.0        imagePullPolicy: Always        securityContext:          privileged: true        volumeMounts:          - name: dockersock            mountPath: /var/run/docker.sock          - name: etcpwx            mountPath: /etc/pwx          - name: optpwxbin            mountPath: /export_bin:shared          - name: logpxcheck            mountPath: /var/log/pxcheck:shared      volumes:      - name: dockersock        hostPath:          path: /var/run/docker.sock      - name: etcpwx        hostPath:          path: /etc/pwx      - name: optpwxbin        hostPath:          path: /opt/pwx/bin      - name: logpxcheck        hostPath:          path: /var/log/pxcheck
+The portworx/px-check-runtime container gathers PX and host information from a node running PX for diagnostics and debugging purposes.v1
+
+The things that are collected today: CPU, Memory, kernel/OS, Docker andEtcd versions, PX version, status, cluster and volume list
+
+The check is distributed via a container and needs to be run on each node or using the podset yaml and kubectl.    The logging is currently captured in the container logs and also written to an output file on the node in /var/log/pxcheck.
+
+Docker run:
+
+   sudo docker run --rm --name px-check-runtime --net=host --privileged=true  -v /etc/pwx:/etc/pwx -v /opt/pwx/bin:/export_bin:shared -v /var/run/docker.sock:/var/run/docker.sock -v /var/log/pxcheck:/var/log/pxcheck:shared portworx/px-check-runtime:2.0.0.0
+
+
+Below is dset yaml file which can be used with kubernetes.
+
+e.g. Yaml:
+
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: px-runtime-check-dset
+  namespace: kube-system
+spec:
+  minReadySeconds: 0
+  template:
+    metadata:
+      labels:
+        name: px-runtime-check
+    spec:
+      hostNetwork: true
+      containers:
+      - name: px-runtime-check
+        image: portworx/px-check-runtime:2.0.0.0
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: dockersock
+            mountPath: /var/run/docker.sock
+          - name: etcpwx
+            mountPath: /etc/pwx
+          - name: optpwxbin
+            mountPath: /export_bin:shared
+          - name: logpxcheck
+            mountPath: /var/log/pxcheck:shared
+      volumes:
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: etcpwx
+        hostPath:
+          path: /etc/pwx
+      - name: optpwxbin
+        hostPath:
+          path: /opt/pwx/bin
+      - name: logpxcheck
+        hostPath:
+          path: /var/log/pxcheck

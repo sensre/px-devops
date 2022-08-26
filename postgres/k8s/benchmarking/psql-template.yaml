@@ -25,12 +25,15 @@ spec:
     port: 5434
     targetPort: 5432
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: SC_NAME-app
   namespace: portworx
 spec:
+  selector:
+    matchLabels:
+      app: SC_NAME-app
   strategy:
     rollingUpdate:
       maxSurge: 1

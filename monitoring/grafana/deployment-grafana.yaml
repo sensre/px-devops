@@ -1,5 +1,5 @@
 ﻿kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 metadata:
   name: px-grafana
   namespace: tectonic-system

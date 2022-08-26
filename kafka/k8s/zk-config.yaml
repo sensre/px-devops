@@ -12,7 +12,7 @@ data:
   snap.retain: "3"
   purge.interval: "1"
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: zk-budget

@@ -47,7 +47,7 @@ metadata:
   name: fluentd
   namespace: kube-system
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: fluentd
@@ -65,7 +65,7 @@ rules:
   - watch
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: fluentd
 roleRef:
@@ -215,7 +215,7 @@ data:
        buffer_chunk_limit 256m
     </match>    
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: DaemonSet
 metadata:
   name: fluentd

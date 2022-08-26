@@ -20,7 +20,7 @@ metadata:
   namespace: kube-system
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tiller-clusterrolebinding
 subjects:
@@ -43,7 +43,7 @@ For Jenkins we can use a simple Storage Class with repl2 and shared enabled (for
 
 ```yaml
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: px-jenkins-sc
 provisioner: kubernetes.io/portworx-volume

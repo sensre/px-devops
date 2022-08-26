@@ -1,5 +1,5 @@
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-high-compressed
     namespace: portworx
@@ -13,7 +13,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-high-no-encryption-repl1
     namespace: portworx
@@ -27,7 +27,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-high-no-encryption
     namespace: portworx
@@ -40,7 +40,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-high-repl1
     namespace: portworx
@@ -55,7 +55,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-high
     namespace: portworx
@@ -69,7 +69,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-medium-compressed
     namespace: portworx
@@ -83,7 +83,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-medium
     namespace: portworx
@@ -97,7 +97,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-medium-no-encryption
     namespace: portworx
@@ -110,7 +110,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-medium-no-encryption-repl1
     namespace: portworx
@@ -124,7 +124,7 @@ parameters:
 allowVolumeExpansion: true
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: psql-medium-repl1
     namespace: portworx

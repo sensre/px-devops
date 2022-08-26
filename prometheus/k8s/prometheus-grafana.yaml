@@ -293,7 +293,7 @@ data:
       - channel: '#alertmanager-test'
         send_resolved: true
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   name: alertmanager
@@ -355,7 +355,7 @@ spec:
     port: 9093
     targetPort: 9093
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   name: grafana-core
@@ -2400,7 +2400,7 @@ metadata:
   namespace: monitoring
   namespace: monitoring
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   name: prometheus-core
@@ -2454,7 +2454,7 @@ spec:
         persistentVolumeClaim:
           claimName: prometheus-pvc
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   name: kube-state-metrics
@@ -2497,7 +2497,7 @@ spec:
     app: kube-state-metrics
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: DaemonSet
 metadata:
   name: prometheus-node-exporter
@@ -2784,7 +2784,7 @@ spec:
     component: core
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: px-high-rf2
 provisioner: kubernetes.io/portworx-volume

@@ -1,5 +1,5 @@
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
     name: fio-tester-class-write
 provisioner: kubernetes.io/portworx-volume
@@ -24,7 +24,7 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   name: fio-tester-write
