@@ -30,7 +30,7 @@ spec:
         app: grafana
     spec:
       containers:
-        - image: grafana/grafana:7.3.0
+        - image: grafana/grafana:latest
           name: grafana
           imagePullPolicy: IfNotPresent
           resources:
