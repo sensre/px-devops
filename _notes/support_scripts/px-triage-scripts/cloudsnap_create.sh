@@ -1,1 +1,0 @@
-for v in $({ /opt/pwx/bin/pxctl cloudsnap status; /opt/pwx/bin/pxctl v l; } | awk '{ if($1 ~ /[1-9]+/) vol[$1]++; } END { for (i in vol) if(vol[i]==1) print i }'); do echo "Creating CloudSnap for $v";  /opt/pwx/bin/pxctl cloudsnap backup $v; done
