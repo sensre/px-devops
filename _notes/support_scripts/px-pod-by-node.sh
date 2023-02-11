@@ -11,7 +11,7 @@ fi
 
 operation=$2
 if [ -z "$operation" ]; then
-  echo "operation is required. It should be either list or delete"
+  echo "operation is required. It should be either list, delete or drain"
   exit
 fi
 
@@ -26,7 +26,7 @@ function px_pods_by_node_name() {
     do
         grep_output=`kubectl describe pods $j -n $ns | grep $claim_name`
         if [ "$grep_output" != "" ]; then
-            if [ "$operation" == "delete" ]; then
+            if [ "$operation" == "delete" ] || [ "$operation" == "drain" ]; then
                 echo "Deleting pod: $j in $ns namespace";
                 kubectl delete pod $j -n $ns
             elif [ "$operation" == "list" ]; then
