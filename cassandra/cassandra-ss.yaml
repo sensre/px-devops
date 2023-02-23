@@ -27,6 +27,9 @@ kind: StatefulSet
 metadata:
   name: cassandra
 spec:
+  selector:
+    matchLabels:
+      app: cassandra
   serviceName: cassandra
   replicas: 3
   template:
