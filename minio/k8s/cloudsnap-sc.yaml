@@ -1,0 +1,12 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+    name: px-sc-with-cloudsnap-schedules
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  repl: "2"
+  snapshotschedule.stork.libopenstorage.org/default-schedule: |
+    schedulePolicyName: daily
+    annotations:
+      portworx/snapshot-type: cloud
+      portworx/cloud-cred-id: de95f075-b3e1-4a07-8af3-3cadf3d64031
