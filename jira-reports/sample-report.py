@@ -87,7 +87,7 @@ def dl_export():
     if len(args) != 3:
         print("Not enough arguments provided. Need email, API token and URL")
         print(f"Example:")
-          sys.exit()
+        sys.exit()
      """  
     page = 1000 # issue count per page, default 1000
 
