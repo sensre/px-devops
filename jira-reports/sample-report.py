@@ -87,8 +87,7 @@ def dl_export():
     if len(args) != 3:
         print("Not enough arguments provided. Need email, API token and URL")
         print(f"Example:")
-        #print(f"python3 {sys.argv[0]} sesrinivasan@purestorage.com ATATT3xFfGF0cR4WZ46cF94NJCTspCetasdW9G6KvDkR_2ZEu0tH0Jzw_o8Cak26DnjRRf0mBCdagl-3iXO5fPzssupcnt6A-g24qHsEE3JqeaKJgtv73R6IeHlP6LE4sYnlO8qrxnl1yNPvRNXUbJvwIQWZD5Z_1cLTzKgaF_AsKTQ6kvOgEMI=F5929869 'https://portworx.atlassian.net/rest/api/3/search'")
-        sys.exit()
+          sys.exit()
      """  
     page = 1000 # issue count per page, default 1000
 
